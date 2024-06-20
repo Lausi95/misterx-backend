@@ -1,5 +1,8 @@
 package de.lausi95.misterx.backend.application
 
+import de.lausi95.misterx.backend.DomainException
+import de.lausi95.misterx.backend.application.usecase.CreateTeamCommand
+import de.lausi95.misterx.backend.application.usecase.CreateTeamUsecase
 import de.lausi95.misterx.backend.domain.model.team.TeamRepository
 import de.lausi95.misterx.backend.randomTeamName
 import org.assertj.core.api.Assertions.assertThat
@@ -32,9 +35,9 @@ class CreateTeamUsecaseTest {
 
     createTeamUsecase.createTeam(CreateTeamCommand(someTeamName))
 
-    val ex = Assertions.assertThrows(CreateTeamException::class.java) {
+    val ex = Assertions.assertThrows(DomainException::class.java) {
       createTeamUsecase.createTeam(CreateTeamCommand(someTeamName))
     }
-    assertThat(ex).hasMessage("Cannot create team: Team with name '$someTeamName' already exists.")
+    assertThat(ex).hasMessage("Team with name '$someTeamName' already exists.")
   }
 }

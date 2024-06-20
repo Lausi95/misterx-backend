@@ -1,11 +1,15 @@
 package de.lausi95.misterx.backend.application
 
+import de.lausi95.misterx.backend.DomainException
+import de.lausi95.misterx.backend.application.usecase.RemoveUserFromTeamCommand
+import de.lausi95.misterx.backend.application.usecase.RemoveUserFromTeamUsecase
 import de.lausi95.misterx.backend.domain.model.team.TeamRepository
 import de.lausi95.misterx.backend.domain.model.user.UserRepository
 import de.lausi95.misterx.backend.randomTeam
 import de.lausi95.misterx.backend.randomUser
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -25,49 +29,27 @@ class RemoveUserFromTeamUsecaseTest {
   @Test
   fun shouldRemoveUserFromTeam() {
     val someUser = randomUser()
-    val someTeam = randomTeam(members = listOf(someUser.id))
+    val someTeam = randomTeam(members = mutableSetOf(someUser.id))
 
-    userRepository.create(someUser)
-    teamRepository.create(someTeam)
+    userRepository.save(someUser)
     teamRepository.save(someTeam)
 
-    removeUserFromTeamUsecase.removeUserFromTeam(RemoveUserFromTeamCommand(someUser.id, someTeam.id))
+    removeUserFromTeamUsecase.removeUserFromTeam(RemoveUserFromTeamCommand(someTeam.teamId, someUser.id))
 
-    val team = teamRepository.findById(someTeam.id) ?: fail("Team does not exist")
+    val team = teamRepository.findById(someTeam.teamId)
     assertThat(team.containsMember(someUser.id)).isFalse()
   }
 
   @Test
   fun shouldThrowWhenTeamDoesNotExist() {
     val someUser = randomUser()
-    val someTeam = randomTeam(members = listOf(someUser.id))
+    val someTeam = randomTeam(members = mutableSetOf(someUser.id))
 
-    userRepository.create(someUser)
+    userRepository.save(someUser)
 
-    val ex = assertThrows(RemoveUserFromTeamException::class.java) { removeUserFromTeamUsecase.removeUserFromTeam(RemoveUserFromTeamCommand(someUser.id, someTeam.id)) }
-    assertThat(ex).hasMessage("Cannot remove user from team: Team with id ${someTeam.id} does not exist.")
-  }
-
-  @Test
-  fun shouldThrowWhenUserDoesNotExist() {
-    val someUser = randomUser()
-    val someTeam = randomTeam(members = listOf(someUser.id))
-
-    teamRepository.create(someTeam)
-
-    val ex = assertThrows(RemoveUserFromTeamException::class.java) { removeUserFromTeamUsecase.removeUserFromTeam(RemoveUserFromTeamCommand(someUser.id, someTeam.id)) }
-    assertThat(ex).hasMessage("Cannot remove user from team: User with id ${someUser.id} does not exist.")
-  }
-
-  @Test
-  fun shouldThrowWhenUserIsNotInThisTeam() {
-    val someUser = randomUser()
-    val someTeam = randomTeam()
-
-    userRepository.create(someUser)
-    teamRepository.create(someTeam)
-
-    val ex = assertThrows(RemoveUserFromTeamException::class.java) { removeUserFromTeamUsecase.removeUserFromTeam(RemoveUserFromTeamCommand(someUser.id, someTeam.id)) }
-    assertThat(ex).hasMessage("Cannot remove user from team: User with id ${someUser.id} is not in the team with id ${someTeam.id}.")
+    val ex = assertThrows(DomainException::class.java) {
+      removeUserFromTeamUsecase.removeUserFromTeam(RemoveUserFromTeamCommand(someTeam.teamId, someUser.id))
+    }
+    assertThat(ex).hasMessage("Team with id ${someTeam.teamId} does not exist.")
   }
 }

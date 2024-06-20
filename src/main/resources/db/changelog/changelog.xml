@@ -36,9 +36,65 @@
         </createTable>
 
         <createTable tableName="team_user">
-            <column name="team_id" type="uuid" />
-            <column name="user_id" type="uuid" />
+            <column name="team_id" type="uuid">
+                <constraints nullable="false" references="team(id)" foreignKeyName="team_user_team_id" />
+            </column>
+            <column name="user_id" type="uuid">
+                <constraints nullable="false" unique="true" references="user(id)" foreignKeyName="team_user_user_id" />
+            </column>
         </createTable>
         <addPrimaryKey tableName="team_user" columnNames="team_id,user_id" />
+
+        <createTable tableName="misterx">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="userId" type="uuid">
+                <constraints nullable="false" unique="true" references="user(id)" foreignKeyName="misterx_user_id" />
+            </column>
+        </createTable>
+
+        <createTable tableName="token">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="misterx_id" type="uuid">
+                <constraints nullable="false" references="misterx(id)" foreignKeyName="token_misterx" />
+            </column>
+            <column name="code" type="varchar(255)">
+                <constraints nullable="false" unique="true" />
+            </column>
+        </createTable>
+
+        <createTable tableName="location">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="misterx_id" type="uuid">
+                <constraints nullable="false" references="misterx(id)" foreignKeyName="location_misterx_id" />
+            </column>
+            <column name="date" type="datetime">
+                <constraints nullable="false" />
+            </column>
+            <column name="latitude" type="double">
+                <constraints nullable="false" />
+            </column>
+            <column name="longitude" type="double">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <createTable tableName="found">
+            <column name="misterx_id" type="uuid">
+                <constraints nullable="false" references="misterx(id)" foreignKeyName="found_misterx_id" />
+            </column>
+            <column name="team_id" type="uuid">
+                <constraints nullable="false" references="team(id)" foreignKeyName="found_team_id" />
+            </column>
+            <column name="date" type="datetime">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="found" columnNames="misterx_id,team_id" />
     </changeSet>
 </databaseChangeLog>

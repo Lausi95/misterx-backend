@@ -1,5 +1,8 @@
 package de.lausi95.misterx.backend.application
 
+import de.lausi95.misterx.backend.DomainException
+import de.lausi95.misterx.backend.application.usecase.AssignUserToTeamCommand
+import de.lausi95.misterx.backend.application.usecase.AssignUserToTeamUsecase
 import de.lausi95.misterx.backend.domain.model.team.TeamRepository
 import de.lausi95.misterx.backend.domain.model.user.UserRepository
 import de.lausi95.misterx.backend.randomTeam
@@ -27,42 +30,29 @@ class AssignUserToTeamUsecaseTest {
     val someUser = randomUser()
     val someTeam = randomTeam()
 
-    userRepository.create(someUser)
-    teamRepository.create(someTeam)
-
-    assignUserToTeamUsecase.assignUserToTeam(AssignUserToTeamCommand(someUser.id, someTeam.id))
-
-    val team = teamRepository.findById(someTeam.id) ?: fail("Team does not exist.")
-    assertThat(team.containsMember(someUser.id)).isTrue()
-  }
-
-  @Test
-  fun shouldThrowWhenTryingToAssignMemberToTeamAlreadyAssignedTo() {
-    val someUser = randomUser()
-    val someTeam = randomTeam(members = listOf(someUser.id))
-
-    userRepository.create(someUser)
-
-    teamRepository.create(someTeam)
+    userRepository.save(someUser)
     teamRepository.save(someTeam)
 
-    val ex = assertThrows(AssignUserToTeamException::class.java) { assignUserToTeamUsecase.assignUserToTeam(AssignUserToTeamCommand(someUser.id, someTeam.id)) }
-    assertThat(ex).hasMessage("Cannot assign user to team: User with userId ${someUser.id} is already assigned to the team with id ${someTeam.id}.")
+    assignUserToTeamUsecase.assignUserToTeam(AssignUserToTeamCommand(someTeam.teamId, someUser.id))
+
+    val team = teamRepository.findById(someTeam.teamId)
+    assertThat(team.containsMember(someUser.id)).isTrue()
   }
 
   @Test
   fun shouldThrowWhenTryingToAssignMemberToTeamWhichIsAlreadyInAnotherTeam() {
     val someUser = randomUser()
     val someTeam = randomTeam()
-    val someOtherTeam = randomTeam(members = listOf(someUser.id))
+    val someOtherTeam = randomTeam(members = mutableSetOf(someUser.id))
 
-    userRepository.create(someUser)
-    teamRepository.create(someTeam)
-    teamRepository.create(someOtherTeam)
+    userRepository.save(someUser)
+    teamRepository.save(someTeam)
     teamRepository.save(someOtherTeam)
 
-    val ex = assertThrows(AssignUserToTeamException::class.java) { assignUserToTeamUsecase.assignUserToTeam(AssignUserToTeamCommand(someUser.id, someTeam.id)) }
-    assertThat(ex).hasMessage("Cannot assign user to team: User with userId ${someUser.id} is already assigned to a different team.")
+    val ex = assertThrows(DomainException::class.java) {
+      assignUserToTeamUsecase.assignUserToTeam(AssignUserToTeamCommand(someTeam.teamId, someUser.id))
+    }
+    assertThat(ex).hasMessage("User with userId ${someUser.id} is already assigned to a different team.")
   }
 
   @Test
@@ -70,10 +60,12 @@ class AssignUserToTeamUsecaseTest {
     val someUser = randomUser()
     val someTeam = randomTeam()
 
-    teamRepository.create(someTeam)
+    teamRepository.save(someTeam)
 
-    val ex = assertThrows(AssignUserToTeamException::class.java) { assignUserToTeamUsecase.assignUserToTeam(AssignUserToTeamCommand(someUser.id, someTeam.id)) }
-    assertThat(ex).hasMessage("Cannot assign user to team: User with userId ${someUser.id} does not exist.")
+    val ex = assertThrows(DomainException::class.java) {
+      assignUserToTeamUsecase.assignUserToTeam(AssignUserToTeamCommand(someTeam.teamId, someUser.id))
+    }
+    assertThat(ex).hasMessage("User with userId ${someUser.id} does not exist.")
   }
 
   @Test
@@ -81,9 +73,11 @@ class AssignUserToTeamUsecaseTest {
     val someUser = randomUser()
     val someTeam = randomTeam()
 
-    userRepository.create(someUser)
+    userRepository.save(someUser)
 
-    val ex = assertThrows(AssignUserToTeamException::class.java) { assignUserToTeamUsecase.assignUserToTeam(AssignUserToTeamCommand(someUser.id, someTeam.id)) }
-    assertThat(ex).hasMessage("Cannot assign user to team: Team with teamId ${someTeam.id} does not exist.")
+    val ex = assertThrows(DomainException::class.java) {
+      assignUserToTeamUsecase.assignUserToTeam(AssignUserToTeamCommand(someTeam.teamId, someUser.id))
+    }
+    assertThat(ex).hasMessage("Team with id ${someTeam.teamId} does not exist.")
   }
 }

@@ -10,32 +10,38 @@ data class UserId(val value: UUID) {
   constructor(value: String): this(UUID.fromString(value))
 }
 
-data class Username(val value: String)
+class User(
+  var id: UserId,
+  var username: String,
+  var firstname: String,
+  var lastname: String,
+  var passwordHash: String,
+  var admin: Boolean,
+) {
 
-data class Firstname(val value: String)
+  companion object {
 
-data class Lastname(val value: String)
+    fun create(username: String, firstname: String, lastname: String, passwordHash: String): User {
+      val userId = UserId.generate()
+      return User(userId, username, firstname, lastname, passwordHash, false)
+    }
 
-data class PasswordHash(val value: String)
-
-data class User(
-  val id: UserId,
-  val username: Username,
-  val firstname: Firstname,
-  val lastname: Lastname,
-  val passwordHash: PasswordHash,
-  val admin: Boolean,
-)
+    fun createAdmin(username: String, firstname: String, lastname: String, passwordHash: String): User {
+      val userId = UserId.generate()
+      return User(userId, username, firstname, lastname, passwordHash, true)
+    }
+  }
+}
 
 interface UserRepository {
 
-  fun create(user: User)
-
-  fun save(user: User)
-
-  fun findByUsername(username: Username): User?
-
   fun existsById(userId: UserId): Boolean
 
-  fun existsByUsername(username: Username): Boolean
+  fun existsByUsername(username: String): Boolean
+
+  fun findById(userId: UserId): User
+
+  fun findByUsername(username: String): User
+
+  fun save(user: User)
 }

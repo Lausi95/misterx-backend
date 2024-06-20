@@ -1,10 +1,9 @@
 package de.lausi95.misterx.backend.application
 
+import de.lausi95.misterx.backend.*
+import de.lausi95.misterx.backend.application.usecase.RegisterUserCommand
+import de.lausi95.misterx.backend.application.usecase.RegisterUserUsecase
 import de.lausi95.misterx.backend.domain.model.user.UserRepository
-import de.lausi95.misterx.backend.randomFirstname
-import de.lausi95.misterx.backend.randomLastname
-import de.lausi95.misterx.backend.randomPasswordHash
-import de.lausi95.misterx.backend.randomUsername
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -27,12 +26,14 @@ class RegisterUserUsecaseTest {
     val someLastname = randomLastname()
     val somePasswordHash = randomPasswordHash()
 
-    registerUserUsecase.registerUser(RegisterUserCommand(
-      someUsername,
-      someFirstname,
-      someLastname,
-      somePasswordHash,
-    ))
+    registerUserUsecase.registerUser(
+      RegisterUserCommand(
+        someUsername,
+        someFirstname,
+        someLastname,
+        somePasswordHash,
+      )
+    )
 
     assertThat(userRepository.existsByUsername(someUsername)).isTrue()
   }
@@ -53,7 +54,7 @@ class RegisterUserUsecaseTest {
 
     registerUserUsecase.registerUser(registerUserCommand)
 
-    val ex = assertThrows(RegisterUserException::class.java) { registerUserUsecase.registerUser(registerUserCommand) }
-    assertThat(ex).hasMessage("Cannot register user: User with username $someUsername already exists.")
+    val ex = assertThrows(DomainException::class.java) { registerUserUsecase.registerUser(registerUserCommand) }
+    assertThat(ex).hasMessage("User with username '$someUsername' already exists.")
   }
 }
