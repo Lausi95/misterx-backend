@@ -23,6 +23,11 @@ class MapController(
   private val mapConfigRepository: MapConfigRepository,
 ) {
 
+  @GetMapping("/app")
+  fun getApp(): String {
+    return "redirect:https://drive.google.com/file/d/1pRAnByF7XNSxNOD_oVP_qNNbrNPDwBOx/view?usp=sharing"
+  }
+
   @GetMapping("/")
   fun getMap(model: Model): String {
     model.addAttribute("currentPage", "map")
