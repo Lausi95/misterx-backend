@@ -7,9 +7,9 @@ services:
     restart: unless-stopped
     labels:
       - traefik.enable=true
-      - traefik.http.routers.tcm.rule=Host(`misterx.lausi95.de`)
-      - traefik.http.routers.tcm.entrypoints=websecure
-      - traefik.http.routers.tcm.tls.certresolver=letsencrypt
+      - traefik.http.routers.misterx.rule=Host(`misterx.lausi95.net`)
+      - traefik.http.routers.misterx.entrypoints=websecure
+      - traefik.http.routers.misterx.tls.certresolver=letsencrypt
 
   misterx-database:
     image: mongo
