@@ -2,15 +2,10 @@ package de.lausi95.misterx.backend.adapter.security
 
 import de.lausi95.misterx.backend.domain.model.user.UserRepository
 import org.slf4j.LoggerFactory
-import org.springframework.boot.autoconfigure.security.SecurityProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.authentication.AuthenticationProvider
-import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.web.server.ServerHttpSecurity.http
-import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -57,7 +52,9 @@ class SecurityConfiguration {
           .requestMatchers("/").permitAll()
           .requestMatchers("/map").permitAll()
           .requestMatchers("/locations").permitAll()
+          .requestMatchers("/api").permitAll()
           .requestMatchers("/login").permitAll()
+          .requestMatchers("/register").permitAll()
           .anyRequest().authenticated()
       }
       .formLogin {
