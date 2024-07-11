@@ -1,0 +1,27 @@
+services:
+  misterx:
+    image: lausi95/misterx-backend
+    networks: [traefik]
+    environment:
+      - SPRING_DATA_MONGODB_HOST=misterx-database
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.tcm.rule=Host(`misterx.lausi95.de`)
+      - traefik.http.routers.tcm.entrypoints=websecure
+      - traefik.http.routers.tcm.tls.certresolver=letsencrypt
+
+  misterx-database:
+    image: mongo
+    networks: [traefik]
+    env_file: [mongo.env]
+    volumes: [tcm-mongodb:/etc/mongodb]
+    restart: unless-stopped
+
+networks:
+  traefik:
+    external: true
+    name: traefik
+
+volumes:
+  tcm-mongodb:

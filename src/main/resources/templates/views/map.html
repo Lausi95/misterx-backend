@@ -1,0 +1,176 @@
+<th:block>
+    <div id="map" class="w-full h-screen"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/ol@v9.2.4/dist/ol.js"></script>
+    <script>
+        const GRID_LAT_CELLS = 10;
+        const GRID_LONG_CELLS = 10;
+
+        /**
+         * Genertes the grid for the playground.
+         * @param {number} latCells
+         * @param {number} longCells
+         * @param {{lat: number, long: number}} boundaryCoord1
+         * @param {{lat: number, long: number}} boundaryCoord2
+         */
+        function generateGrid(latCells, longCells, boundaryCoord1, boundaryCoord2) {
+            const result = [];
+
+            const dLat = (boundaryCoord2.lat - boundaryCoord1.lat) / latCells;
+            const dLong = (boundaryCoord2.long - boundaryCoord1.long) / latCells;
+
+            for (let i = 0; i < latCells + 1; i++) {
+                const cLat = boundaryCoord1.lat + dLat * i;
+                result.push([
+                    [boundaryCoord1.long, cLat],
+                    [boundaryCoord2.long, cLat],
+                ]);
+            }
+
+            for (let i = 0; i < longCells + 1; i++) {
+                const cLong = boundaryCoord1.long + dLong * i;
+                result.push([
+                    [cLong, boundaryCoord1.lat],
+                    [cLong, boundaryCoord2.lat],
+                ]);
+            }
+
+            return result;
+        }
+
+        /**
+         * @param {number} latCells
+         * @param {number} longCells
+         * @param {{lat: number, long: number}} boundaryCoord1
+         * @param {{lat: number, long: number}} boundaryCoord2
+         * @param {[{lat: number, long: number}]} locations
+         */
+        function generateSquares(latCells, longCells, boundaryCoord1, boundaryCoord2, locations) {
+            const dLat = (boundaryCoord2.lat - boundaryCoord1.lat) / latCells;
+            const dLong = (boundaryCoord2.long - boundaryCoord1.long) / latCells;
+
+            const result = locations.map(location => {
+                const nLat = Math.floor((location.lat - boundaryCoord1.lat) / dLat);
+                const nLong = Math.floor((location.long - boundaryCoord1.long) / dLong);
+
+                const lat1 = boundaryCoord1.lat + dLat * nLat;
+                const lat2 = boundaryCoord1.lat + dLat * (nLat + 1);
+
+                const long1 = boundaryCoord1.long + dLong * nLong;
+                const long2 = boundaryCoord1.long + dLong * (nLong + 1);
+
+                return [
+                    [long1, lat1],
+                    [long2, lat1],
+                    [long2, lat2],
+                    [long1, lat2],
+                    [long1, lat1],
+                ];
+            })
+
+            return [result];
+        }
+
+        const styles = {
+            MultiLineString: new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'black',
+                    width: 2,
+                }),
+            }),
+            MultiPolygon: new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: 'rgba(255, 0, 0, 0.2)',
+                }),
+            }),
+        };
+
+        const styleFunction = function (feature) {
+            return styles[feature.getGeometry().getType()];
+        };
+
+
+
+
+
+        const coord1 = {
+            lat: 52.101428,
+            long: 13.151261,
+        }
+
+        const coord2 = {
+            lat: 52.081307,
+            long: 13.188898,
+        }
+
+        const centerCorrd = {
+            lat: (coord1.lat + coord2.lat) / 2,
+            long: (coord1.long + coord2.long) / 2,
+        }
+
+        ol.proj.useGeographic();
+        const map = new ol.Map({
+            target: "map",
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                })
+            ],
+            view: new ol.View({
+                center: [centerCorrd.long, centerCorrd.lat],
+                zoom: 14,
+            })
+        });
+
+        function updateMap(map, currentLayer) {
+            const geoJsonObject = {
+                type: 'FeatureCollection',
+                crs: {
+                    type: 'name',
+                    properties: {
+                        name: 'EPSG:3857'
+                    }
+                },
+                features: [
+                    {
+                        type: "Feature",
+                        geometry: {
+                            type: 'MultiLineString',
+                            coordinates: generateGrid(GRID_LAT_CELLS, GRID_LONG_CELLS, coord1, coord2),
+                        }
+                    },
+                    {
+                        type: "Feature",
+                        geometry: {
+                            type: 'MultiPolygon',
+                            coordinates: generateSquares(GRID_LAT_CELLS, GRID_LONG_CELLS, coord1, coord2, [centerCorrd]),
+                        }
+                    }
+                ],
+            };
+
+            const vectorSource = new ol.source.Vector({
+                features: new ol.format.GeoJSON().readFeatures(geoJsonObject),
+            });
+
+            const vectorLayer = new ol.layer.Vector({
+                source: vectorSource,
+                style: styleFunction,
+            })
+
+            if (currentLayer) {
+                map.removeLayer(currentLayer);
+            }
+            map.addLayer(vectorLayer);
+
+            return vectorLayer;
+        }
+
+        let vectorLayer = updateMap(map, undefined);
+        // TODO listen to WS
+        setInterval(() => {
+            console.log("Updating map...");
+            vectorLayer = updateMap(map, vectorLayer);
+        }, 1000);
+    </script>
+</th:block>

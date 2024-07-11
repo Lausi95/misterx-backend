@@ -1,51 +1,24 @@
 package de.lausi95.misterx.backend.domain.model.team
 
-import de.lausi95.misterx.backend.domain.model.user.UserId
-import java.util.UUID
+import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.repository.MongoRepository
+import java.time.LocalDateTime
+import java.util.*
 
-data class TeamId(val value: UUID) {
-  constructor(value: String) : this(UUID.fromString(value))
-
-  companion object {
-    fun generate(): TeamId = TeamId(UUID.randomUUID())
-  }
-}
+data class FoundMisterx(val misterxId: UUID, val time: LocalDateTime)
 
 data class Team(
-  var teamId: TeamId,
+  @Id var id: UUID,
   var name: String,
-  var members: MutableSet<UserId>,
-) {
+  var members: MutableSet<UUID>,
+  var foundMisterx: MutableSet<FoundMisterx>
+)
 
-  companion object {
-    fun of(teamName: String): Team {
-      val teamId = TeamId.generate()
-      return Team(teamId, teamName, mutableSetOf())
-    }
-  }
+interface TeamRepository : MongoRepository<Team, UUID> {
 
-  fun containsMember(userId: UserId): Boolean {
-    return members.contains(userId)
-  }
+  fun existsByName(teamName: String): Boolean
 
-  fun assignMember(userId: UserId) {
-    members.add(userId)
-  }
-
-  fun removeMember(userId: UserId) {
-    members.remove(userId)
-  }
-}
-
-interface TeamRepository {
-
-  fun existsById(teamId: TeamId): Boolean
-
-  fun existsByTeamName(teamName: String): Boolean
-
-  fun findById(teamId: TeamId): Team
-
-  fun findAll(): List<Team>
+  fun findByMembersContaining(userId: UUID): Optional<Team>
 
   fun save(team: Team)
 }

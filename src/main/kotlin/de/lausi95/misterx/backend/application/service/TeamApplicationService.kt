@@ -1,52 +1,80 @@
 package de.lausi95.misterx.backend.application.service
 
 import de.lausi95.misterx.backend.DomainException
-import de.lausi95.misterx.backend.application.usecase.*
+import de.lausi95.misterx.backend.domain.model.misterx.Misterx
+import de.lausi95.misterx.backend.domain.model.misterx.MisterxRepository
+import de.lausi95.misterx.backend.domain.model.team.FoundMisterx
 import de.lausi95.misterx.backend.domain.model.team.Team
 import de.lausi95.misterx.backend.domain.model.team.TeamRepository
 import de.lausi95.misterx.backend.domain.model.user.UserRepository
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
+import java.util.UUID
 
 @Service
 internal class TeamApplicationService(
   private val teamRepository: TeamRepository,
   private val userRepository: UserRepository,
-):
-  AssignUserToTeamUsecase,
-  RemoveUserFromTeamUsecase,
-  CreateTeamUsecase {
+  private val misterxRepository: MisterxRepository
+) {
+
+    private val log = LoggerFactory.getLogger(TeamApplicationService::class.java)
 
   @Transactional
-  override fun assignUserToTeam(command: AssignUserToTeamCommand) {
-    if (!userRepository.existsById(command.userId)) {
-      throw DomainException("User with userId ${command.userId} does not exist.")
+  fun assignUserToTeam(userId: UUID, teamId: UUID) {
+    if (!userRepository.existsById(userId)) {
+      throw DomainException("User with userId $userId does not exist.")
     }
 
-    val otherTeams = teamRepository.findAll().filter { it.teamId != command.teamId }
-    if (otherTeams.any { it.containsMember(command.userId) }) {
-      throw DomainException("User with userId ${command.userId} is already assigned to a different team.")
+    val otherTeams = teamRepository.findAll().filter { it.id != teamId }
+    if (otherTeams.any { it.members.contains(userId) }) {
+      throw DomainException("User with userId $userId is already assigned to a different team.")
     }
 
-    val team = teamRepository.findById(command.teamId)
-    team.assignMember(command.userId)
+    val team = teamRepository.findById(teamId).orElseThrow {
+      error("Team doens not exist.")
+    }
+    team.members.add(userId)
     teamRepository.save(team)
   }
 
   @Transactional
-  override fun removeUserFromTeam(command: RemoveUserFromTeamCommand) {
-    val team = teamRepository.findById(command.teamId)
-    team.removeMember(command.userId)
+  fun removeUserFromTeam(userId: UUID, teamId: UUID) {
+    log.info("Remving user {} from team {}.", userId, teamId)
+
+    val team = teamRepository.findById(teamId).orElseThrow {
+      error("Team does not exist.")
+    }
+    team.members.remove(userId)
+    teamRepository.save(team)
+  }
+
+  fun createTeam(teamName: String) {
+    log.info("Creating team with name {}", teamName)
+
+    if (teamRepository.existsByName(teamName)) {
+      throw DomainException("Team with name '${teamName}' already exists.")
+    }
+
+    val team = Team(UUID.randomUUID(), teamName, mutableSetOf(), mutableSetOf())
     teamRepository.save(team)
   }
 
   @Transactional
-  override fun createTeam(command: CreateTeamCommand) {
-    if (teamRepository.existsByTeamName(command.teamName)) {
-      throw DomainException("Team with name '${command.teamName}' already exists.")
+  fun teamFoundMisterx(teamId: UUID, token: String) {
+    val team = teamRepository.findById(teamId).orElseThrow {
+      error("No team with id $teamId")
+    }
+    val misterx = misterxRepository.findByToken(token).orElseThrow {
+      error("No misterx with token $token")
     }
 
-    val team = Team.of(command.teamName)
+    team.foundMisterx.add(FoundMisterx(misterx.id, LocalDateTime.now()))
+    misterx.token = Misterx.createToken()
+
     teamRepository.save(team)
+    misterxRepository.save(misterx)
   }
 }

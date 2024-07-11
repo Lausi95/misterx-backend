@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <title>Misterx - Login</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="/style.css"/>
+
+    <script src="https://unpkg.com/htmx.org@1.9.11"></script>
+    <script src="https://kit.fontawesome.com/2e37175346.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+<nav class="bg-gray-100">
+    <div class="p-4 pb-0 font-bold">
+        Mister X Luckenwalde
+    </div>
+    <div class="flex items-end z-50 relative flex">
+        <!-- Home -->
+        <div th:if="${currentPage == 'Map'}" class="border-b-2 p-4 border-gray-500 flex gap-3 items-center">
+            <i class="fa-solid fa-house"></i>
+            <a class="font-bold" href="/">Karte</a>
+        </div>
+        <div th:unless="${currentPage == 'Map'}" class="border-b p-4 border-gray-300 flex gap-3 items-center text-gray-500">
+            <i class="fa-solid fa-house"></i>
+            <a href="/">Karte</a>
+        </div>
+
+        <div class="flex-grow border-b border-gray-300"></div>
+    </div>
+</nav>
+
+<form target="/login" method="post" class="p-3">
+    <div class="mb-2">
+        <label for="username">Nutzername:</label>
+        <input id="username" name="username" class="bg-gray-200 p-3 rounded block w-full" type="text" />
+    </div>
+    <div class="mb-2">
+        <label for="password">Passwort:</label>
+        <input id="password" name="password" class="bg-gray-200 p-3 rounded block w-full" type="password" />
+    </div>
+    <div class="text-right">
+        <button type="submit" class="bg-green-200 rounded px-4 py-3">Login</button>
+    </div>
+</form>
+
+</body>
+</html>
