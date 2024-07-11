@@ -23,28 +23,28 @@ class MisterxController(
   private val misterxRepository: MisterxRepository,
   private val locationRepository: LocationRepository) {
 
-  @GetMapping("/misterx-check")
+  @GetMapping("/check")
   @ResponseBody
   fun checkMisterx(): ResponseEntity<String> {
     val username = SecurityContextHolder.getContext()?.authentication?.name
     if (username == null) {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).body("no username?")
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).body("\"Authentication required\"")
     }
 
     val user = userRepository.findByUsername(username).orElse(null)
     if (user == null) {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).body("user not found")
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).body("\"User not found\"")
     }
 
     val misterx = misterxRepository.findByUserId(user.id).orElse(null)
     if (misterx == null) {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).body("no misterx.")
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).body("\"You are no misterx!\"")
     }
 
-    return ResponseEntity.ok("ok.")
+    return ResponseEntity.ok("\"logged in.\"")
   }
 
-  @PostMapping("/misterx-location")
+  @PostMapping("/location")
   @ResponseBody
   fun updateLocation(@RequestBody request: UpdateLocationRequest): ResponseEntity<String> {
     val username = SecurityContextHolder.getContext()?.authentication?.name
