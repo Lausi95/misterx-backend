@@ -52,7 +52,7 @@ class SecurityConfiguration {
           .requestMatchers("/").permitAll()
           .requestMatchers("/map").permitAll()
           .requestMatchers("/locations").permitAll()
-          .requestMatchers("/api").permitAll()
+          .requestMatchers("/app").permitAll()
           .requestMatchers("/login").permitAll()
           .requestMatchers("/register").permitAll()
           .anyRequest().authenticated()
