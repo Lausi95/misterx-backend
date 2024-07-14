@@ -60,8 +60,8 @@
                     longitude: long,
                 })
             }).then(() => {
-                document.getElementById("latitude").innerHTML = `${position.lat}`;
-                document.getElementById("longitude").innerHTML = `${position.long}`;
+                document.getElementById("latitude").innerHTML = `${lat}`;
+                document.getElementById("longitude").innerHTML = `${long}`;
                 document.getElementById("lastupdate").innerHTML = `${new Date()}`;
             });
         }
