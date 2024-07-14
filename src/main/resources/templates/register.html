@@ -20,11 +20,7 @@
     </div>
     <div class="flex items-end z-50 relative flex">
         <!-- Home -->
-        <div th:if="${currentPage == 'Map'}" class="border-b-2 p-4 border-gray-500 flex gap-3 items-center">
-            <i class="fa-solid fa-house"></i>
-            <a class="font-bold" href="/">Karte</a>
-        </div>
-        <div th:unless="${currentPage == 'Map'}" class="border-b p-4 border-gray-300 flex gap-3 items-center text-gray-500">
+        <div class="border-b p-4 border-gray-300 flex gap-3 items-center text-gray-500">
             <i class="fa-solid fa-house"></i>
             <a href="/">Karte</a>
         </div>
@@ -33,19 +29,31 @@
     </div>
 </nav>
 
-<div class="p-2 bg-green-200 mb-2" th:if="${messages}" th:each="message: ${messages}" th:text="${message}"></div>
+<div class="p-2 bg-red-200 mb-2" th:if="${errors}" th:each="error: ${errors}" th:text="${error}"></div>
 
-<form target="/login" method="post" class="p-3">
+<form target="/register" method="post" class="p-3">
     <div class="mb-2">
         <label for="username">Nutzername:</label>
         <input id="username" name="username" class="bg-gray-200 p-3 rounded block w-full" type="text" />
     </div>
     <div class="mb-2">
+        <label for="firstname">Vorname:</label>
+        <input id="firstname" name="firstname" class="bg-gray-200 p-3 rounded block w-full" type="text" />
+    </div>
+    <div class="mb-2">
+        <label for="lastname">Nachname:</label>
+        <input id="lastname" name="lastname" class="bg-gray-200 p-3 rounded block w-full" type="text" />
+    </div>
+    <div class="mb-2">
         <label for="password">Passwort:</label>
         <input id="password" name="password" class="bg-gray-200 p-3 rounded block w-full" type="password" />
     </div>
+    <div class="mb-2">
+        <label for="password-repeat">Password wiederholen:</label>
+        <input id="password-repeat" name="passwordRepeat" class="bg-gray-200 p-3 rounded block w-full" type="password" />
+    </div>
     <div class="text-right">
-        <button type="submit" class="bg-green-200 rounded px-4 py-3">Login</button>
+        <button type="submit" class="bg-green-200 rounded px-4 py-3">Registrieren</button>
     </div>
 </form>
 

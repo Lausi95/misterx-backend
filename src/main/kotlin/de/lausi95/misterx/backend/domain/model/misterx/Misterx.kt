@@ -13,9 +13,9 @@ data class Misterx(
 ) {
 
   companion object {
-    private val charPool = "abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVXYZ".toCharArray()
+    private val charPool = "0123456789".toCharArray()
     fun createToken(): String {
-      return (1..3)
+      return (1..6)
         .map { Random.nextInt(0, charPool.size).let { charPool[it] } }
         .joinToString("")
     }

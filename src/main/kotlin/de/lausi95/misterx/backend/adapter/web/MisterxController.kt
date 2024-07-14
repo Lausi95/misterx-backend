@@ -1,5 +1,6 @@
-package de.lausi95.misterx.backend.adapter.web.misterx
+package de.lausi95.misterx.backend.adapter.web
 
+import de.lausi95.misterx.backend.application.service.MisterxApplicationService
 import de.lausi95.misterx.backend.domain.model.Location
 import de.lausi95.misterx.backend.domain.model.LocationRepository
 import de.lausi95.misterx.backend.domain.model.misterx.MisterxRepository
@@ -8,22 +9,64 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Controller
+import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import java.time.LocalDateTime
 import java.util.UUID
 
+data class MisterxModel(
+  val id: UUID,
+  val firstname: String,
+  val lastname: String,
+  val token: String,
+)
+
+data class CreateMisterxRequest(
+  val userId: UUID,
+)
+
 @Controller
-@RequestMapping("/misterx")
 class MisterxController(
   private val userRepository: UserRepository,
   private val misterxRepository: MisterxRepository,
-  private val locationRepository: LocationRepository) {
+  private val modelService: ModelService,
+  private val locationRepository: LocationRepository,
+  private val misterxApplicationService: MisterxApplicationService
+) {
 
-  @GetMapping("/check")
+  @GetMapping("/misterx")
+  fun getMisterxList(model: Model): String {
+    val misterxList = misterxRepository.findAll()
+    val misterxUserList = misterxList.map { it.userId }
+    val userList = userRepository.findAll()
+    val nonMisterxUsers = userList.filter { !misterxUserList.contains(it.id) }
+
+    return with(modelService) {
+      model.page("misterx") {
+        it.addAttribute("misterxList", misterxList.map { misterx ->
+          val user = userList.find { user -> misterx.userId == user.id } ?: error(":?")
+          MisterxModel(
+            misterx.id,
+            user.firstname,
+            user.lastname,
+            misterx.token
+          )
+        })
+        it.addAttribute("userList", nonMisterxUsers)
+      }
+    }
+  }
+
+  @PostMapping("/misterx")
+  fun postMisterx(request: CreateMisterxRequest): String {
+    misterxApplicationService.createMisterx(request.userId)
+    return "redirect:/misterx"
+  }
+
+  @GetMapping("/misterx/check")
   @ResponseBody
   fun checkMisterx(): ResponseEntity<String> {
     val username = SecurityContextHolder.getContext()?.authentication?.name
@@ -44,7 +87,7 @@ class MisterxController(
     return ResponseEntity.ok("\"logged in.\"")
   }
 
-  @PostMapping("/location")
+  @PostMapping("/misterx/location")
   @ResponseBody
   fun updateLocation(@RequestBody request: UpdateLocationRequest): ResponseEntity<String> {
     val username = SecurityContextHolder.getContext()?.authentication?.name

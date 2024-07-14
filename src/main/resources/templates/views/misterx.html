@@ -1,0 +1,33 @@
+<div class="p-2">
+    <h1 class="font-bold text-xl mb-3">Misterx Verwaltung</h1>
+
+    <div class="p-2 mb-3 shadow rounded">
+        <h1 class="font-bold text-lg mb-2">Mister-X Liste</h1>
+        <div class="grid gap-1 grid-cols-3">
+            <div class="font-bold p-2 bg-gray-300">Vorname</div>
+            <div class="font-bold p-2 bg-gray-300">Nachname</div>
+            <div class="font-bold p-2 bg-gray-300">Aktueller Token</div>
+            <th:block th:each="misterx: ${misterxList}">
+                <div class="p-2 bg-gray-200" th:text="${misterx.firstname}"></div>
+                <div class="p-2 bg-gray-200" th:text="${misterx.lastname}"></div>
+                <div class="p-2 bg-gray-200" th:text="${misterx.token}"></div>
+            </th:block>
+        </div>
+    </div>
+
+    <div class="p-2 mb-3 shadow rounded">
+        <h1 class="font-bold text-lg mb-2">Nutzer Liste</h1>
+        <div class="grid gap-1 grid-cols-3">
+            <div class="font-bold p-2 bg-gray-300">Vorname</div>
+            <div class="font-bold p-2 bg-gray-300">Nachname</div>
+            <div class="font-bold p-2 bg-gray-300">Aktionen</div>
+            <th:block th:each="user: ${userList}">
+                <div class="p-2 bg-gray-200" th:text="${user.firstname}"></div>
+                <div class="p-2 bg-gray-200" th:text="${user.lastname}"></div>
+                <div class="p-2 bg-gray-200">
+                   <form action="/misterx" method="post"><input type="hidden" name="userId" th:value="${user.id}"/><button type="submit">Misterx</button></form>
+                </div>
+            </th:block>
+        </div>
+    </div>
+</div>

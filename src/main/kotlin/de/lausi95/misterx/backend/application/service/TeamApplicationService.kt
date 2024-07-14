@@ -14,7 +14,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 @Service
-internal class TeamApplicationService(
+class TeamApplicationService(
   private val teamRepository: TeamRepository,
   private val userRepository: UserRepository,
   private val misterxRepository: MisterxRepository
@@ -69,6 +69,9 @@ internal class TeamApplicationService(
     }
     val misterx = misterxRepository.findByToken(token).orElseThrow {
       error("No misterx with token $token")
+    }
+    if (team.foundMisterx.map { it.misterxId }.contains(misterx.id)) {
+      error("Team already found this misterx.")
     }
 
     team.foundMisterx.add(FoundMisterx(misterx.id, LocalDateTime.now()))

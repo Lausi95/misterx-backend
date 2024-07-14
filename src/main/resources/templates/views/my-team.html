@@ -1,0 +1,28 @@
+<div class="p-2">
+    <h1 class="font-bold text-xl mb-3" th:text="${'Team ' + teamname}"></h1>
+
+    <div class="p-2 mb-3 shadow rounded">
+        <h1 class="font-bold text-lg mb-2">Mister-X finden</h1>
+        <form action="/find-misterx" method="post">
+            <label for="code">Mister-X Code eingeben:</label>
+            <div class="flex gap-1">
+                <input id="code" name="token" class="flex-grow bg-gray-200 p-3 rounded block w-full"/>
+                <button class="p-2 rounded bg-green-100">Code Absenden</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="p-2 mb-3 shadow rounded">
+        <h1 class="font-bold text-lg mb-2">Gefundene Misterx</h1>
+        <div class="grid gap-1 grid-cols-3">
+            <div class="font-bold p-2 bg-gray-300">Vorname</div>
+            <div class="font-bold p-2 bg-gray-300">Nachname</div>
+            <div class="font-bold p-2 bg-gray-300">Zeit</div>
+            <th:block th:each="found: ${foundList}">
+                <div class="p-2 bg-gray-200" th:text="${found.firstname}"></div>
+                <div class="p-2 bg-gray-200" th:text="${found.lastname}"></div>
+                <div class="p-2 bg-gray-200" th:text="${found.time}"></div>
+            </th:block>
+        </div>
+    </div>
+</div>

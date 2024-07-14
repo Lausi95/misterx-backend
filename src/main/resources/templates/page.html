@@ -14,39 +14,7 @@
 </head>
 
 <body>
-
-<nav class="bg-gray-100">
-    <div class="p-4 pb-0 font-bold">
-        Mister X Luckenwalde
-    </div>
-    <div class="flex items-end z-50 relative flex">
-        <!-- Home -->
-        <div th:if="${currentPage == 'Map'}" class="border-b-2 p-4 border-gray-500 flex gap-3 items-center">
-            <i class="fa-solid fa-house"></i>
-            <a class="font-bold" href="/">Karte</a>
-        </div>
-        <div th:unless="${currentPage == 'Map'}" class="border-b p-4 border-gray-300 flex gap-3 items-center text-gray-500">
-            <i class="fa-solid fa-house"></i>
-            <a href="/">Karte</a>
-        </div>
-
-        <!-- Book -->
-        <div th:if="${currentPage == 'Team'}" class="border-b-2 p-4 border-gray-500 flex gap-3 items-center">
-            <i class="fa-regular fa-calendar-plus"></i>
-            <a class="font-bold" href="/team">Team</a>
-        </div>
-        <div th:unless="${currentPage == 'Team'}" class="border-b p-4 border-gray-300 flex gap-3 items-center text-gray-500">
-            <i class="fa-regular fa-calendar-plus"></i>
-            <a href="/team">Team</a>
-        </div>
-
-        <div class="flex-grow border-b border-gray-300"></div>
-        <div></div>
-
-        <a sec:authorize="!isAuthenticated()" href="/login" class="border-b border-gray-300 p-4 text-gray-500">Login</a>
-        <a sec:authorize="isAuthenticated()" href="/logout" class="border-b border-gray-300 p-4 text-gray-500">Logout</a>
-    </div>
-</nav>
+<nav th:replace="~{components/navigation :: navigation}"></nav>
 
 <div id="view" th:insert="~{${view}}"></div>
 

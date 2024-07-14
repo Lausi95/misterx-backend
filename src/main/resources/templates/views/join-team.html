@@ -1,0 +1,9 @@
+<div class="p-2">
+    <h2>Team beitreten</h2>
+
+    <form th:each="team: ${teams}" action="join-team" method="post" class="flex gap-1 mb-2">
+        <input class="p-2 bg-gray-100 rounded" th:value="${team.name}" />
+        <input  type="hidden" th:value="${team.id}" name="teamId" class="p-2 bg-gray-100 rounded" />
+        <button class="p-2 rounded bg-green-100">Beitreten</button>
+    </form>
+</div>

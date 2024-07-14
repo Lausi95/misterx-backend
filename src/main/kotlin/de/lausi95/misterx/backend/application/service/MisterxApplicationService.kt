@@ -12,7 +12,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 @Service
-internal class MisterxApplicationService(
+class MisterxApplicationService(
   private val userRepository: UserRepository,
   private val misterxRepository: MisterxRepository,
   private val locationRepository: LocationRepository,

@@ -1,0 +1,46 @@
+<div class="p-2">
+    <h1 class="font-bold text-xl mb-3">Karte Verwalten</h1>
+
+    <form action="/map-config" method="post" class="p-2 mb-3 shadow rounded">
+        <h1 class="font-bold text-lg mb-2">Karteneinstellungen</h1>
+
+        <div class="mb-2">
+            <label for="c1-lat">Latitude 1:</label>
+            <input id="c1-lat" name="corner1Latitude" th:value="${conf.corner1.latitude}" class="bg-gray-200 p-3 rounded block w-full" type="number" step="0.000001" />
+        </div>
+
+        <div class="mb-2">
+            <label for="c1-long">Longitude 1:</label>
+            <input id="c1-long" name="corner1Longitude" th:value="${conf.corner1.longitude}" class="bg-gray-200 p-3 rounded block w-full" type="number" step="0.000001"  />
+        </div>
+
+        <div class="mb-2">
+            <label for="c2-lat">Latitude 2:</label>
+            <input id="c2-lat" name="corner2Latitude" th:value="${conf.corner2.latitude}" class="bg-gray-200 p-3 rounded block w-full" type="number" step="0.000001"  />
+        </div>
+
+        <div class="mb-2">
+            <label for="c2-long">Longitude 2:</label>
+            <input id="c2-long" name="corner2Longitude" th:value="${conf.corner2.longitude}" class="bg-gray-200 p-3 rounded block w-full" type="number" step="0.000001"  />
+        </div>
+
+        <div class="mb-2">
+            <label for="gridLat">Latitude Gitter:</label>
+            <input id="gridLat" name="gridLatitude" th:value="${conf.cells.latitudeCells}" class="bg-gray-200 p-3 rounded block w-full" type="number" />
+        </div>
+
+        <div class="mb-2">
+            <label for="gridLong">Longitude Gitter:</label>
+            <input id="gridLong" name="gridLongitude" th:value="${conf.cells.longitudeCells}" class="bg-gray-200 p-3 rounded block w-full" type="number" />
+        </div>
+
+        <div class="mb-2">
+            <label for="message">Nachicht:</label>
+            <input id="message" name="message" th:value="${conf.message}" class="bg-gray-200 p-3 rounded block w-full" type="text" />
+        </div>
+
+        <div class="text-right">
+            <button type="submit" class="bg-green-200 rounded px-4 py-3">Speichern</button>
+        </div>
+    </form>
+</div>
