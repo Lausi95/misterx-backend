@@ -35,10 +35,12 @@ class UserApplicationService(
   }
 
   @Transactional
-  fun registerAdmin(username: String, firstname: String, lastname: String, passwordHash: String) {
+  fun registerAdmin(username: String, firstname: String, lastname: String, password: String) {
     if (userRepository.existsByUsername(username)) {
       throw DomainException("User with name $username alredy exists.")
     }
+
+    val passwordHash = passwordEncoder.encode(password)
 
     val user = User(
       UUID.randomUUID(),
