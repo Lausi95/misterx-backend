@@ -74,12 +74,21 @@
                     MultiLineString: new ol.style.Style({
                         stroke: new ol.style.Stroke({
                             color: 'black',
-                            width: 2,
+                            width: 1,
                         }),
                     }),
                     MultiPolygon: new ol.style.Style({
                         fill: new ol.style.Fill({
                             color: 'rgba(255, 0, 0, 0.2)',
+                        }),
+                    }),
+                    Circle: new ol.style.Style({
+                        stroke: new ol.style.Stroke({
+                            color: 'blue',
+                            width: 2,
+                        }),
+                        fill: new ol.style.Fill({
+                            color: 'rgba(0,0,255,0.1)',
                         }),
                     }),
                 };
@@ -123,6 +132,10 @@
                         lat: l.latitude,
                         long: l.longitude,
                     }));
+                    const waterLocation = {
+                        lat: locations.waterLocation.latitude,
+                        long: locations.waterLocation.longitude,
+                    };
 
                     const geoJsonObject = {
                         type: 'FeatureCollection',
@@ -148,11 +161,15 @@
                                 }
                             }
                         ],
-                    };
+                    }
 
                     const vectorSource = new ol.source.Vector({
                         features: new ol.format.GeoJSON().readFeatures(geoJsonObject),
                     });
+
+                    vectorSource.addFeature(new ol.Feature(new ol.geom.Circle(
+                        [waterLocation.long, waterLocation.lat],
+                        0.0005)));
 
                     const vectorLayer = new ol.layer.Vector({
                         source: vectorSource,
@@ -172,9 +189,8 @@
                         updateMap(map, vectorLayer).then(newVectorLayer => {
                             vectorLayer = newVectorLayer
                         })
-                    }, 1000);
-                })
-                // TODO listen to WS
+                    }, 5_000);
+                });
             }
         );
     </script>

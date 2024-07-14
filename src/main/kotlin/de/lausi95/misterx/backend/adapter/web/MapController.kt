@@ -106,22 +106,26 @@ class MapController(
   @GetMapping("/api/locations")
   @ResponseBody
   fun getLocations(): LocationModel {
-    val waterLocation = LocationEntry(0.0, 0.0)
+    val wasserUser = userRepository.findByUsername("wasser").orElseThrow()
+    val wasserMisterx = misterxRepository.findByUserId(wasserUser.id).orElseThrow()
+    val wasserLocation =
+      locationRepository.findByMisterxIdOrderByTimeDesc(Pageable.ofSize(1), wasserMisterx.id).firstOrNull()
+
+    val wasserLocationEntry = wasserLocation?.let { LocationEntry(it.latitude, it.longiture) }?: LocationEntry(0.0, 0.0)
 
     val username = SecurityContextHolder.getContext()?.authentication?.name
     if (username == null) {
-      val misterx = misterxRepository.findAll()
-
-       val misterxLocations = misterx.mapNotNull {
+      val misterx = misterxRepository.findAll().filter { m -> m.id != wasserMisterx.id }
+      val misterxLocations = misterx.mapNotNull {
         locationRepository.findByMisterxIdOrderByTimeDesc(
           Pageable.ofSize(1),
           it.id
         ).content.firstOrNull()
       }.map {
         LocationEntry(it.latitude, it.longiture)
-       }
+      }
 
-      return LocationModel(misterxLocations, waterLocation)
+      return LocationModel(misterxLocations, wasserLocationEntry)
     }
 
     // use index for that?
@@ -132,7 +136,9 @@ class MapController(
       .map { it.foundMisterx }
       .orElseGet { mutableSetOf() }
 
-    val misterx = misterxRepository.findAll().filter { !foundMisterx.map { fmx -> fmx.misterxId }.contains(it.id) }
+    val misterx = misterxRepository.findAll()
+      .filter { m -> m.id != wasserMisterx.id }
+      .filter { !foundMisterx.map { fmx -> fmx.misterxId }.contains(it.id) }
     val misterxLocations = misterx.mapNotNull {
       locationRepository.findByMisterxIdOrderByTimeDesc(
         Pageable.ofSize(1),
@@ -142,6 +148,6 @@ class MapController(
       LocationEntry(it.latitude, it.longiture)
     }
 
-    return LocationModel(misterxLocations, waterLocation)
+    return LocationModel(misterxLocations, wasserLocationEntry)
   }
 }
