@@ -14,7 +14,8 @@
             <a href="/">Karte</a>
         </div>
 
-        <th:block th:replace="~{components/nav-item::nav-item('leaderboard', 'Rangliste', 'fa-regular fa-calendar-plus')}"></th:block>
+        <th:block
+                th:replace="~{components/nav-item::nav-item('leaderboard', 'Rangliste', 'fa-regular fa-calendar-plus')}"></th:block>
 
         <th:block sec:authorize="isAuthenticated()">
             <th:block th:unless="${misterx}">
@@ -24,7 +25,7 @@
                 </th:block>
                 <th:block th:if="${teamname}">
                     <th:block
-                            th:replace="~{components/nav-item::nav-item('my-team', ${teamname}, 'fa-regular fa-calendar-plus')}"></th:block>
+                            th:replace="~{components/nav-item::nav-item('my-team', 'Team', 'fa-regular fa-calendar-plus')}"></th:block>
                 </th:block>
             </th:block>
             <th:block th:if="${misterx}">

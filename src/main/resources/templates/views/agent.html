@@ -62,7 +62,7 @@
         updateToken().then(() => setInterval(updateToken, 5_000))
         navigator.geolocation.watchPosition(updatePosition, null, {
             enableHighAccuracy: true,
-            maximumAge: 0
+            maximumAge: 10_000
         });
     </script>
 </div>
