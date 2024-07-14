@@ -51,14 +51,14 @@ class TeamApplicationService(
     teamRepository.save(team)
   }
 
-  fun createTeam(teamName: String) {
+  fun createTeam(teamName: String, memberCount: Int) {
     log.info("Creating team with name {}", teamName)
 
     if (teamRepository.existsByName(teamName)) {
       throw DomainException("Team with name '${teamName}' already exists.")
     }
 
-    val team = Team(UUID.randomUUID(), teamName, mutableSetOf(), mutableSetOf())
+    val team = Team(UUID.randomUUID(), teamName, memberCount, mutableSetOf(), mutableSetOf())
     teamRepository.save(team)
   }
 

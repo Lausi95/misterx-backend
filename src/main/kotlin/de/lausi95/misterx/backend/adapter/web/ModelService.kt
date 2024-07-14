@@ -1,5 +1,6 @@
 package de.lausi95.misterx.backend.adapter.web
 
+import de.lausi95.misterx.backend.domain.model.misterx.MisterxRepository
 import de.lausi95.misterx.backend.domain.model.team.TeamRepository
 import de.lausi95.misterx.backend.domain.model.user.UserRepository
 import org.springframework.security.core.context.SecurityContextHolder
@@ -9,14 +10,17 @@ import org.springframework.ui.Model
 @Component
 class ModelService(
   private val userRepository: UserRepository,
-  private val teamRepository: TeamRepository
+  private val teamRepository: TeamRepository,
+  private val misterxRepository: MisterxRepository
 ) {
 
   fun Model.page(page: String, modelFn: (model: Model) -> Unit): String {
     val username = SecurityContextHolder.getContext().authentication.name
     if (username != "anonymousUser") {
       val user = userRepository.findByUsername(username).orElse(null)
+      val misterx = misterxRepository.findByUserId(user.id).orElse(null)
 
+      addAttribute("misterx", misterx)
       addAttribute("username", user.username)
       addAttribute("admin", user.admin)
       addAttribute("teamname", teamRepository.findByMembersContaining(user.id).map { it.name }.orElse(null))

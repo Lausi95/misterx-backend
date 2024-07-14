@@ -1,0 +1,68 @@
+<div class="p-2">
+    <h1 class="font-bold text-xl mb-3">Agent</h1>
+
+    <div class="p-2 mb-3 shadow rounded">
+        <h2 class="font-bold text-lg mb-2">Token</h2>
+        <div class="rounded bg-gray-100 text-xl p-3 text-center" id="token"></div>
+    </div>
+
+    <div class="p-2 mb-3 shadow rounded">
+        <h2 class="font-bold text-lg mb-2">Position</h2>
+        <div class="grid grid-cols-2 gap-2">
+            <div class="mb-2 p-2 rounded bg-gray-100">
+                <div class="font-bold">Latitude</div>
+                <div id="latitude"></div>
+            </div>
+            <div class="mb-2 p-2 rounded bg-gray-100">
+                <div class="font-bold">Longitude</div>
+                <div id="longitude"></div>
+            </div>
+        </div>
+        <div class="p-2 rounded bg-gray-100">
+            <div class="font-bold">Zuletzt Aktualisiert</div>
+            <div id="lastupdate"></div>
+        </div>
+    </div>
+
+    <div class="p-2 mb-3 shadow rounded">
+        <h2 class="font-bold text-lg mb-2">Position</h2>
+        <div class="grid grid-cols-2 gap-1">
+            <div class="bg-gray-200 p-2">Name</div>
+            <div class="bg-gray-200 p-2"># Mitglieder</div>
+            <th:block th:each="team: ${teamList}">
+                <div class="bg-gray-100 p-2" th:text="${team.name}"></div>
+                <div class="bg-gray-100 p-2" th:text="${team.memberCount}"></div>
+            </th:block>
+        </div>
+    </div>
+
+    <script>
+        async function updateToken() {
+            const misterx = await fetch("/api/misterx").then(r => r.json())
+            document.getElementById("token").innerHTML = misterx.token
+        }
+
+        async function updatePosition(position) {
+            fetch("/misterx/location", {
+                method: 'POST',
+                headers: {
+                    "content-type": "application/json"
+                },
+                body: JSON.stringify({
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                })
+            }).then(() => {
+                document.getElementById("latitude").innerHTML = `${position.coords.latitude}`;
+                document.getElementById("longitude").innerHTML = `${position.coords.longitude}`;
+                document.getElementById("lastupdate").innerHTML = `${new Date()}`;
+            });
+        }
+
+        updateToken().then(() => setInterval(updateToken, 5_000))
+        navigator.geolocation.watchPosition(updatePosition, null, {
+            enableHighAccuracy: true,
+            maximumAge: 0
+        });
+    </script>
+</div>

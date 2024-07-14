@@ -4,9 +4,13 @@
             <label for="teamname">Team-Name:</label>
             <input id="teamname" name="teamname" class="bg-gray-200 p-3 rounded block w-full" type="text" />
         </div>
+        <div class="mb-2">
+            <label for="membercount">Team-Name:</label>
+            <input id="membercount" name="memberCount" class="bg-gray-200 p-3 rounded block w-full" type="number" />
+        </div>
         <div class="text-right">
             <button type="submit" class="bg-green-200 rounded px-4 py-3">Team erstellen</button>
         </div>
     </form>
-    <div th:each="team: ${teams}" th:text="${team.name}"></div>
+    <div th:each="team: ${teams}" th:text="${team.name + '(' + team.memberCount + ')'}"></div>
 </div>

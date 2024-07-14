@@ -10,6 +10,7 @@ data class FoundMisterx(val misterxId: UUID, val time: LocalDateTime)
 data class Team(
   @Id var id: UUID,
   var name: String,
+  var memberCount: Int,
   var members: MutableSet<UUID>,
   var foundMisterx: MutableSet<FoundMisterx>
 )

@@ -3,7 +3,9 @@ package de.lausi95.misterx.backend.adapter.web
 import de.lausi95.misterx.backend.application.service.MisterxApplicationService
 import de.lausi95.misterx.backend.domain.model.Location
 import de.lausi95.misterx.backend.domain.model.LocationRepository
+import de.lausi95.misterx.backend.domain.model.misterx.Misterx
 import de.lausi95.misterx.backend.domain.model.misterx.MisterxRepository
+import de.lausi95.misterx.backend.domain.model.team.TeamRepository
 import de.lausi95.misterx.backend.domain.model.user.UserRepository
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -34,8 +36,31 @@ class MisterxController(
   private val misterxRepository: MisterxRepository,
   private val modelService: ModelService,
   private val locationRepository: LocationRepository,
-  private val misterxApplicationService: MisterxApplicationService
+  private val misterxApplicationService: MisterxApplicationService,
+  private val teamRepository: TeamRepository
 ) {
+
+  @GetMapping("/agent")
+  fun getMisterxMe(model: Model): String {
+    val username = SecurityContextHolder.getContext().authentication.name
+    val user = userRepository.findByUsername(username).orElseThrow()
+    val misterx = misterxRepository.findByUserId(user.id).orElseThrow()
+    return with(modelService) {
+      model.page("agent") {
+        it.addAttribute(
+          "teamList",
+          teamRepository.findAll().filter { team -> !team.foundMisterx.map { m -> m.misterxId }.contains(misterx.id) })
+      }
+    }
+  }
+
+  @GetMapping("/api/misterx")
+  @ResponseBody
+  fun getMisterx(): Misterx {
+    val username = SecurityContextHolder.getContext().authentication.name
+    val user = userRepository.findByUsername(username).orElseThrow()
+    return misterxRepository.findByUserId(user.id).orElseThrow()
+  }
 
   @GetMapping("/misterx")
   fun getMisterxList(model: Model): String {

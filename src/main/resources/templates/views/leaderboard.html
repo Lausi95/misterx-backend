@@ -1,0 +1,19 @@
+<div class="p-2">
+    <h1 class="font-bold text-xl mb-3">Rangliste</h1>
+    <div class="p-2 mb-3 shadow rounded">
+        <div class="grid grid-cols-4 gap-2">
+            <div class="p-2 bg-gray-200">Platz</div>
+            <div class="p-2 bg-gray-200">Team</div>
+            <div class="p-2 bg-gray-200"># Misterx</div>
+            <div class="p-2 bg-gray-200">Zeit Letzer Fund</div>
+
+            <th:block th:each="entry: ${leaderboardEntries}">
+                <div class="p-2 bg-gray-100" th:text="${entry.position}"></div>
+                <div class="p-2 bg-gray-100" th:text="${entry.teamName}"></div>
+                <div class="p-2 bg-gray-100" th:text="${entry.misterxCount}"></div>
+                <div class="p-2 bg-gray-100" th:text="${entry.lastFoundTime}"></div>
+            </th:block>
+
+        </div>
+    </div>
+</div>

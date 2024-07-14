@@ -3,6 +3,7 @@ package de.lausi95.misterx.backend.adapter.web
 import de.lausi95.misterx.backend.application.service.MisterxApplicationService
 import de.lausi95.misterx.backend.application.service.TeamApplicationService
 import de.lausi95.misterx.backend.domain.model.misterx.MisterxRepository
+import de.lausi95.misterx.backend.domain.model.team.Team
 import de.lausi95.misterx.backend.domain.model.team.TeamRepository
 import de.lausi95.misterx.backend.domain.model.user.UserRepository
 import org.springframework.security.core.context.SecurityContextHolder
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.Comparator
 
 data class FindMisterxRequest(
   val token: String,
@@ -19,10 +21,18 @@ data class FindMisterxRequest(
 
 data class CreateTeamRequest(
   val teamname: String,
+  val memberCount: Int,
 )
 
 data class JoinTeamRequest(
   val teamId: UUID,
+)
+
+data class LeaderboardEntry(
+  val position: Int,
+  val teamName: String,
+  val misterxCount: Int,
+  val lastFoundTime: String,
 )
 
 @Controller
@@ -46,7 +56,7 @@ class TeamController(
 
   @PostMapping("/teams")
   fun postTeam(request: CreateTeamRequest): String {
-    teamApplicationService.createTeam(request.teamname)
+    teamApplicationService.createTeam(request.teamname, request.memberCount)
     return "redirect:/teams"
   }
 
@@ -99,6 +109,27 @@ class TeamController(
     return with(modelService) {
       model.page("my-team") {
         it.addAttribute("foundList", foundList)
+      }
+    }
+  }
+
+  @GetMapping("/leaderboard")
+  fun getLeaderboard(model: Model): String {
+    val foundCountComparator: Comparator<Team> = Comparator.comparing<Team?, Int?> { it.foundMisterx.count() }.reversed()
+    val foundTimeComparator: Comparator<Team> = Comparator.comparing { it.foundMisterx.firstOrNull()?.time }
+    val compound = foundCountComparator.thenComparing(foundTimeComparator)
+
+    val teams = teamRepository.findAll()
+    teams.sortedWith(compound)
+
+    val leaderboard = teams.mapIndexed { idx, team ->
+      LeaderboardEntry(idx + 1, team.name, team.foundMisterx.count(), team.foundMisterx.firstOrNull()?.time?.format(
+        DateTimeFormatter.ofPattern("HH:MM")) ?: "---")
+    }
+
+    return with(modelService) {
+      model.page("leaderboard") {
+        it.addAttribute("leaderboardEntries", leaderboard)
       }
     }
   }

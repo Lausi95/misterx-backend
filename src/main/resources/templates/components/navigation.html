@@ -4,7 +4,6 @@
         <div sec:authorize="isAuthenticated()" th:text="${username}"></div>
     </div>
     <div class="flex items-end z-50 relative flex">
-        <!-- Home -->
         <div th:if="${currentPage == 'map'}" class="border-b-2 p-4 border-gray-500 flex gap-3 items-center">
             <i class="fa-solid fa-house"></i>
             <a class="font-bold" href="/">Karte</a>
@@ -15,14 +14,22 @@
             <a href="/">Karte</a>
         </div>
 
+        <th:block th:replace="~{components/nav-item::nav-item('leaderboard', 'Rangliste', 'fa-regular fa-calendar-plus')}"></th:block>
+
         <th:block sec:authorize="isAuthenticated()">
-            <th:block th:unless="${teamname}">
-                <th:block
-                        th:replace="~{components/nav-item::nav-item('join-team', 'Team Beitreten', 'fa-regular fa-calendar-plus')}"></th:block>
+            <th:block th:unless="${misterx}">
+                <th:block th:unless="${teamname}">
+                    <th:block
+                            th:replace="~{components/nav-item::nav-item('join-team', 'Team Beitreten', 'fa-regular fa-calendar-plus')}"></th:block>
+                </th:block>
+                <th:block th:if="${teamname}">
+                    <th:block
+                            th:replace="~{components/nav-item::nav-item('my-team', ${teamname}, 'fa-regular fa-calendar-plus')}"></th:block>
+                </th:block>
             </th:block>
-            <th:block th:if="${teamname}">
+            <th:block th:if="${misterx}">
                 <th:block
-                        th:replace="~{components/nav-item::nav-item('my-team', ${teamname}, 'fa-regular fa-calendar-plus')}"></th:block>
+                        th:replace="~{components/nav-item::nav-item('agent', 'Agent', 'fa-regular fa-calendar-plus')}"></th:block>
             </th:block>
             <th:block th:if="${admin}">
                 <th:block
