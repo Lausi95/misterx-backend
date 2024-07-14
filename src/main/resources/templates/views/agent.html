@@ -42,27 +42,45 @@
             document.getElementById("token").innerHTML = misterx.token
         }
 
-        async function updatePosition(position) {
+        let lat = 0;
+        let long = 0;
+
+        function updatePosition(lat, long) {
+            if (lat === 0 || long === 0) {
+                return;
+            }
+
             fetch("/misterx/location", {
                 method: 'POST',
                 headers: {
                     "content-type": "application/json"
                 },
                 body: JSON.stringify({
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude,
+                    latitude: lat,
+                    longitude: long,
                 })
             }).then(() => {
-                document.getElementById("latitude").innerHTML = `${position.coords.latitude}`;
-                document.getElementById("longitude").innerHTML = `${position.coords.longitude}`;
+                document.getElementById("latitude").innerHTML = `${position.lat}`;
+                document.getElementById("longitude").innerHTML = `${position.long}`;
                 document.getElementById("lastupdate").innerHTML = `${new Date()}`;
             });
         }
 
-        updateToken().then(() => setInterval(updateToken, 5_000))
-        navigator.geolocation.watchPosition(updatePosition, null, {
+        navigator.geolocation.watchPosition((position) => {
+            const first = lat === 0 || long === 0;
+
+            lat = position.coords.longitude;
+            long = position.coords.longitude;
+
+            if (first) {
+                updatePosition(lat, long);
+            }
+        }, null, {
             enableHighAccuracy: true,
             maximumAge: 10_000
         });
+
+        setInterval(() => updatePosition(lat, long), 10_000);
+        updateToken().then(() => setInterval(updateToken, 5_000));
     </script>
 </div>
