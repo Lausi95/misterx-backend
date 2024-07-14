@@ -69,7 +69,7 @@
         navigator.geolocation.watchPosition((position) => {
             const first = lat === 0 || long === 0;
 
-            lat = position.coords.longitude;
+            lat = position.coords.latitude;
             long = position.coords.longitude;
 
             if (first) {
