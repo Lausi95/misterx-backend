@@ -103,7 +103,7 @@ class TeamController(
       FoundMisterxModel(
         misterxUser.firstname,
         misterxUser.lastname,
-        it.time.format(DateTimeFormatter.ofPattern("HH:MM"))
+        it.time.format(DateTimeFormatter.ofPattern("HH:mm"))
       )
     }
 
@@ -117,15 +117,14 @@ class TeamController(
   @GetMapping("/leaderboard")
   fun getLeaderboard(model: Model): String {
     val foundCountComparator: Comparator<Team> = Comparator.comparing<Team?, Int?> { it.foundMisterx.count() }.reversed()
-    val foundTimeComparator: Comparator<Team> = Comparator.comparing { it.foundMisterx.firstOrNull()?.time ?: LocalDateTime.MIN }
+    val foundTimeComparator: Comparator<Team> = Comparator.comparing { it.foundMisterx.lastOrNull()?.time ?: LocalDateTime.MIN }
     val compound = foundCountComparator.thenComparing(foundTimeComparator)
 
-    val teams = teamRepository.findAll()
-    teams.sortedWith(compound)
+    val teams = teamRepository.findAll().sortedWith(compound)
 
     val leaderboard = teams.mapIndexed { idx, team ->
-      LeaderboardEntry(idx + 1, team.name, team.foundMisterx.count(), team.foundMisterx.firstOrNull()?.time?.format(
-        DateTimeFormatter.ofPattern("HH:MM")) ?: "---")
+      LeaderboardEntry(idx + 1, team.name, team.foundMisterx.count(), team.foundMisterx.lastOrNull()?.time?.format(
+        DateTimeFormatter.ofPattern("HH:mm")) ?: "---")
     }
 
     return with(modelService) {
