@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.Comparator
@@ -116,7 +117,7 @@ class TeamController(
   @GetMapping("/leaderboard")
   fun getLeaderboard(model: Model): String {
     val foundCountComparator: Comparator<Team> = Comparator.comparing<Team?, Int?> { it.foundMisterx.count() }.reversed()
-    val foundTimeComparator: Comparator<Team> = Comparator.comparing { it.foundMisterx.firstOrNull()?.time }
+    val foundTimeComparator: Comparator<Team> = Comparator.comparing { it.foundMisterx.firstOrNull()?.time ?: LocalDateTime.MIN }
     val compound = foundCountComparator.thenComparing(foundTimeComparator)
 
     val teams = teamRepository.findAll()
