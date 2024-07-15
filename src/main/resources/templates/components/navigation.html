@@ -1,58 +1,58 @@
 <nav th:fragment="navigation" class="bg-gray-100">
-    <div class="p-4 pb-0 font-bold">
-        <div>Mister X Luckenwalde</div>
+    <div class="px-2 py-4">
+        <div class="font-bold">Mister X Luckenwalde</div>
         <div sec:authorize="isAuthenticated()" th:text="${username}"></div>
     </div>
     <div class="flex items-end z-50 relative flex">
-        <div th:if="${currentPage == 'map'}" class="border-b-2 p-4 border-gray-500 flex gap-3 items-center">
-            <i class="fa-solid fa-house"></i>
+        <div th:if="${currentPage == 'map'}" class="border-b-2 p-2 border-gray-500 flex gap-3 items-center">
+            <i class="fa-solid fa-map"></i>
             <a class="font-bold" href="/">Karte</a>
         </div>
         <div th:unless="${currentPage == 'map'}"
-             class="border-b p-4 border-gray-300 flex gap-3 items-center text-gray-500">
-            <i class="fa-solid fa-house"></i>
+             class="border-b p-2 border-gray-300 flex gap-3 items-center text-gray-500">
+            <i class="fa-solid fa-map"></i>
             <a href="/">Karte</a>
         </div>
 
         <th:block
-                th:replace="~{components/nav-item::nav-item('leaderboard', 'Rangliste', 'fa-regular fa-calendar-plus')}"></th:block>
+                th:replace="~{components/nav-item::nav-item('leaderboard', 'Rangliste', 'fa-solid fa-list-ol')}"></th:block>
 
         <th:block sec:authorize="isAuthenticated()">
             <th:block th:unless="${misterx}">
                 <th:block th:unless="${teamname}">
                     <th:block
-                            th:replace="~{components/nav-item::nav-item('join-team', 'Team Beitreten', 'fa-regular fa-calendar-plus')}"></th:block>
+                            th:replace="~{components/nav-item::nav-item('join-team', 'Team Beitreten', 'fa-solid fa-user-plus')}"></th:block>
                 </th:block>
                 <th:block th:if="${teamname}">
                     <th:block
-                            th:replace="~{components/nav-item::nav-item('my-team', 'Team', 'fa-regular fa-calendar-plus')}"></th:block>
+                            th:replace="~{components/nav-item::nav-item('my-team', 'Team', 'fa-solid fa-people-group')}"></th:block>
                 </th:block>
             </th:block>
             <th:block th:if="${misterx}">
                 <th:block
-                        th:replace="~{components/nav-item::nav-item('agent', 'Agent', 'fa-regular fa-calendar-plus')}"></th:block>
+                        th:replace="~{components/nav-item::nav-item('agent', 'Agent', 'fa-solid fa-person-running')}"></th:block>
             </th:block>
             <th:block th:if="${admin}">
                 <th:block
-                        th:replace="~{components/nav-item::nav-item('teams', 'Teams', 'fa-regular fa-calendar-plus')}"></th:block>
+                        th:replace="~{components/nav-item::nav-item('teams', 'Teams', 'fa-solid fa-users-gear')}"></th:block>
             </th:block>
             <th:block th:if="${admin}">
                 <th:block
-                        th:replace="~{components/nav-item::nav-item('misterx', 'Mister X', 'fa-regular fa-calendar-plus')}"></th:block>
+                        th:replace="~{components/nav-item::nav-item('misterx', 'Mister X', 'fa-solid fa-gear')}"></th:block>
             </th:block>
             <th:block th:if="${admin}">
                 <th:block
-                        th:replace="~{components/nav-item::nav-item('map-config', 'Karte', 'fa-regular fa-calendar-plus')}"></th:block>
+                        th:replace="~{components/nav-item::nav-item('map-config', 'Karte', 'fa-solid fa-gear')}"></th:block>
             </th:block>
         </th:block>
 
         <div class="flex-grow border-b border-gray-300"></div>
 
 
-        <a sec:authorize="!isAuthenticated()" href="/login" class="border-b border-gray-300 p-4 text-gray-500">Login</a>
-        <a sec:authorize="!isAuthenticated()" href="/register" class="border-b border-gray-300 p-4 text-gray-500">Registrieren</a>
+        <a sec:authorize="!isAuthenticated()" href="/login" class="border-b border-gray-300 p-2 text-gray-500">Login</a>
+        <a sec:authorize="!isAuthenticated()" href="/register" class="border-b border-gray-300 p-2 text-gray-500">Registrieren</a>
         <a sec:authorize="isAuthenticated()" href="/logout"
-           class="border-b border-gray-300 p-4 text-gray-500">
+           class="border-b border-gray-300 p-2 text-gray-500">
             <i class="fa-solid fa-right-from-bracket"></i>
         </a>
     </div>

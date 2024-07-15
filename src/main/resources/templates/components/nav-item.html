@@ -1,9 +1,9 @@
 <th:block th:fragment="nav-item(page, displayName, icon)">
-    <div th:if="${currentPage == page}" class="border-b-2 p-4 border-gray-500 flex gap-3 items-center">
+    <div th:if="${currentPage == page}" class="border-b-2 p-2 border-gray-500 flex gap-3 items-center">
         <i th:class="${icon}"></i>
         <a class="font-bold" th:href="${'/' + page}" th:text="${displayName}"></a>
     </div>
-    <div th:unless="${currentPage == page}" class="border-b p-4 border-gray-300 flex gap-3 items-center text-gray-500">
+    <div th:unless="${currentPage == page}" class="border-b p-2 border-gray-300 flex gap-3 items-center text-gray-500">
         <i th:class="${icon}"></i>
         <a th:href="${'/' + page}" th:text="${displayName}"></a>
     </div>
