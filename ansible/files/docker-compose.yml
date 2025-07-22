@@ -3,7 +3,7 @@ services:
     image: lausi95/misterx-backend
     networks: [traefik]
     environment:
-      - SPRING_DATA_MONGODB_HOST=misterx-database
+      - SPRING_DATA_MONGODB_HOST=misterx2025-database
     restart: unless-stopped
     labels:
       - traefik.enable=true
@@ -17,6 +17,13 @@ services:
     volumes: [misterx2025-mongodb:/etc/mongodb]
     restart: unless-stopped
 
+  misterx2025-database:
+    image: mongo
+    networks: [traefik]
+    volumes: [misterx20252-mongodb:/etc/mongodb]
+    restart: unless-stopped
+
+
 networks:
   traefik:
     external: true
@@ -24,3 +31,5 @@ networks:
 
 volumes:
   misterx2025-mongodb:
+  misterx20252-mongodb:
+
