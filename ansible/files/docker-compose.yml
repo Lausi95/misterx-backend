@@ -3,7 +3,7 @@ services:
     image: lausi95/misterx-backend
     networks: [traefik]
     environment:
-      - SPRING_DATA_MONGODB_HOST=misterx2025-database
+      - SPRING_DATA_MONGODB_HOST=misterx-database
     restart: unless-stopped
     labels:
       - traefik.enable=true
