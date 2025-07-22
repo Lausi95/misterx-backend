@@ -14,7 +14,7 @@ services:
   misterx-database:
     image: mongo
     networks: [traefik]
-    volumes: [misterx-mongodb:/etc/mongodb]
+    volumes: [misterx2025-mongodb:/etc/mongodb]
     restart: unless-stopped
 
 networks:
@@ -23,4 +23,4 @@ networks:
     name: traefik
 
 volumes:
-  misterx-mongodb:
+  misterx2025-mongodb:
