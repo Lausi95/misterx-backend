@@ -38,7 +38,8 @@ jobs:
       - name: Run ansible script
         shell: bash
         run: |
-          service ssh status
+          sudo service ssh start
+          sudo service ssh status
           cd ansible
           cat deploy-prod.yml
           ansible-playbook -vvv -e "ansible_user=tom" --private-key /home/runner/.ssh/id_rsa -i hosts.yml deploy-prod.yml
